@@ -5,7 +5,8 @@
   "installCommand": "npm install -g pnpm@10.33.0 && ELECTRON_SKIP_BINARY_DOWNLOAD=1 pnpm install --frozen-lockfile --ignore-scripts",
   "framework": "vite",
   "rewrites": [
-    { "source": "/api/:path*", "destination": "http://localhost:8799/api/:path*" }
+    { "source": "/api/:path*", "destination": "https://mmtbot-server-production.up.railway.app/api/:path*" },
+    { "source": "/.well-known/:path*", "destination": "https://mmtbot-server-production.up.railway.app/.well-known/:path*" }
   ],
   "headers": [
     {
