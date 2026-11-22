@@ -3,7 +3,7 @@
   "build": {
     "builder": "DOCKERFILE",
     "dockerfilePath": "Dockerfile",
-    "dockerBuildTarget": "cloud-home"
+    "dockerBuildTarget": "server"
   },
   "deploy": {
     "numReplicas": 1,
