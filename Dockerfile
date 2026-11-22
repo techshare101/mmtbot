@@ -258,10 +258,13 @@ COPY --from=build --chown=maus:maus /src/dist ./dist
 COPY --from=build --chown=maus:maus /src/skills ./skills
 # `docker compose exec omb openmausbot pair`: the commands the CLI prints start the same way.
 RUN printf '#!/bin/sh\nexec node /app/dist-server/openmausbot.js "$@"\n' > /usr/local/bin/openmausbot && chmod 0755 /usr/local/bin/openmausbot
+COPY deploy/railway-entrypoint.sh /app/deploy/railway-entrypoint.sh
+RUN chmod 0755 /app/deploy/railway-entrypoint.sh
 ENV HOME=/data \
     OMB_CLI_PREFIX="docker compose exec omb openmausbot"
 # VOLUME removed for Railway compatibility — Railway manages volumes externally
-USER maus
+# Railway mounts /data as root; the entrypoint takes ownership then drops to maus.
+USER root
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
   CMD curl -sf http://127.0.0.1:8799/api/health | grep -q openmausbot || exit 1
 # The launcher runs dist-server/index.js and starts it again when it asks to
@@ -270,4 +273,4 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
 # -s: under `docker run --init` or compose's `init: true` tini is not PID 1,
 # and collects the server's orphans as a subreaper instead of warning.
 ENTRYPOINT ["/usr/bin/tini", "-s", "--"]
-CMD ["node", "dist-server/server-launcher.js"]
+CMD ["/app/deploy/railway-entrypoint.sh"]
